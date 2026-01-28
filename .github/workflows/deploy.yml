@@ -14,9 +14,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # Step 2: Set up kubeconfig from GitHub Secrets
+      # Step 2: Set up Kubeconfig for Kubernetes access
       - name: Set up kubeconfig
-        run: echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+        run: |
+          mkdir -p $HOME/.kube  # Ensure the .kube directory exists
+          
+          # Check if the secret is being passed correctly
+          echo "Checking kubeconfig secret..."  # Debug message
+          echo "${{ secrets.KUBECONFIG }}" | head -n 10  # Print the first 10 lines of the kubeconfig (for debugging)
+
+          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config  # Write kubeconfig from secrets
+
+          # Debug the kubeconfig written to the file
+          echo "Checking kubeconfig file..."
+          cat $HOME/.kube/config  # Print the entire kubeconfig content written to file
 
       # Step 3: Deploy NGINX to Kubernetes
       - name: Deploy NGINX to Kubernetes
