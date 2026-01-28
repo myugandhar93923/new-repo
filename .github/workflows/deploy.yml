@@ -1,0 +1,29 @@
+name: Deploy NGINX to Kubernetes
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Step 2: Set up kubeconfig from GitHub Secrets
+      - name: Set up kubeconfig
+        run: echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+
+      # Step 3: Deploy NGINX to Kubernetes
+      - name: Deploy NGINX to Kubernetes
+        run: |
+          kubectl apply -f k8s-deployment.yaml  # Apply the Kubernetes YAML
+          kubectl rollout status deployment/nginx-deployment  # Wait for the deployment to complete
+
+      # Step 4: Confirm the Deployment
+      - name: Check deployment status
+        run: kubectl get deployments  # Show the status of the deployment
